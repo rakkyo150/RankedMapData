@@ -1,6 +1,6 @@
 ## 日本語版READMEは[こちら](README_JP.md)
 
-# ScoreSaberRankData
+# RankedMapData
 
 ## What is this?
 This is a csv of the ranked maps data you can get from BeatSaver API.<br>

@@ -1,6 +1,6 @@
 ## The English version of README is [here](README.md)
 
-# ScoreSaberRankData
+# RankedMapData
 
 ## これは何？
 BeatSaverから取得できるランク譜面のデータのcsvです<br>
