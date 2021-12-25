@@ -46,9 +46,7 @@ jobs:
           set -x
           cd out
           assets=()
-          for asset in ./outcome.csv; do
-            assets+=("-a" "$asset")
-          done
+          assets+=("-a" "./outcome.csv")
           tag_name=`date '+%Y%m%d%H%M'`
           hub release create "${assets[@]}" -m "Latest" "$tag_name"
         env:
