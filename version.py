@@ -1,1 +1,1 @@
-VERSION="ScoreSaberRankData/1.0.0"
+VERSION="RankedMapData/1.0.0"
