@@ -1,10 +1,10 @@
 import os
 import requests
-from beatsaver.beatsaver import BeatSaver
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
 import io
+import asyncio
+
 
 beatSaberAccessCount=0
 previousHash= ""
@@ -46,22 +46,24 @@ warnsList=[]
 resetsList=[]
 starsList=[]
 
-"""
+# For GitHub Actions
 githubEndpoint="https://api.github.com/repos/rakkyo150/ScoreSaberRankData/releases/latest"
-headers={'Authorization': f'token {os.environ["GithubToken"]}'}
+headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
 githubResponse=requests.get(url=githubEndpoint,headers=headers)
 releaseJson=githubResponse.json()
-print(releaseJson["assets"][0]["browser_download_url"])
 secondHeaders={'Accept': 'application/octet-stream' }
 csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
-print(csvResponse.status_code)
-print(csvResponse.content.decode("utf-8"))
-previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0)
+previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
+headHash=previousDf.loc[0,"hash"]
+
 """
+# For local update
+# You need outcome.csv in the same directory
 previousDf=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
 print(previousDf.head())
-headHash=previousDf.loc[1,"hash"]
+headHash=previousDf.loc[0,"hash"]
 print(headHash)
+"""
 
 flg=False
 pageNumber=0
@@ -164,19 +166,6 @@ else:
     nextDf=df.append(previousDf,ignore_index=True)
 
 
-    """
-    nextDf.plot.box()
-    plt.savefig("box.png")
-    plt.show()
-
-    plt.figure()
-    standardDf=(df-df.mean())/df.std()
-    standardDf.plot.box()
-    plt.savefig("standardBox.png")
-    plt.show()
-
-    plt.close()
-    """
-
-    with open(f'./outcome.csv','w',encoding="utf-8",errors="ignore") as f:
-        nextDf.to_csv(f)
+# For local update, change "out" to "."
+with open(f'out/outcome.csv','w',encoding="utf-8",errors="ignore") as f:
+    nextDf.to_csv(f)
