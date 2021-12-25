@@ -1,1 +1,1 @@
-VERSION="RankedMapData/1.1.0"
+VERSION="RankedMapData/1.1.1"

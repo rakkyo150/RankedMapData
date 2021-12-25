@@ -172,5 +172,5 @@ else:
 
 
 # For local update, change "out" to "."
-with open(f'./outcome.csv','w',encoding="utf-8",errors="ignore") as f:
+with open(f'out/outcome.csv','w',encoding="utf-8",errors="ignore") as f:
     nextDf.to_csv(f)
