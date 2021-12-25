@@ -3,8 +3,7 @@ import requests
 import pandas as pd
 import time
 import io
-import asyncio
-
+import datetime
 
 beatSaberAccessCount=0
 previousHash= ""
@@ -47,14 +46,20 @@ resetsList=[]
 starsList=[]
 
 # For GitHub Actions
-githubEndpoint="https://api.github.com/repos/rakkyo150/ScoreSaberRankData/releases/latest"
+githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
 headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
 githubResponse=requests.get(url=githubEndpoint,headers=headers)
 releaseJson=githubResponse.json()
 secondHeaders={'Accept': 'application/octet-stream' }
 csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
 previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
-headHash=previousDf.loc[0,"hash"]
+
+# １日１回、0時台の実行で全部取得
+if datetime.datetime.now().strftime("%H")=="00":
+    headHash=0
+# それ以外は追加譜面分だけ
+else:
+    headHash=previousDf.loc[0,"hash"]
 
 """
 # For local update
@@ -167,5 +172,5 @@ else:
 
 
 # For local update, change "out" to "."
-with open(f'out/outcome.csv','w',encoding="utf-8",errors="ignore") as f:
+with open(f'./outcome.csv','w',encoding="utf-8",errors="ignore") as f:
     nextDf.to_csv(f)
