@@ -1,8 +1,10 @@
+import os
 import requests
 from beatsaver.beatsaver import BeatSaver
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+import io
 
 beatSaberAccessCount=0
 previousHash= ""
@@ -44,18 +46,39 @@ warnsList=[]
 resetsList=[]
 starsList=[]
 
-df=pd.DataFrame(columns=["song","difficulty","njs","offset","length","nps","notes","obstacles","bombs","stars"])
+"""
+githubEndpoint="https://api.github.com/repos/rakkyo150/ScoreSaberRankData/releases/latest"
+headers={'Authorization': f'token {os.environ["GithubToken"]}'}
+githubResponse=requests.get(url=githubEndpoint,headers=headers)
+releaseJson=githubResponse.json()
+print(releaseJson["assets"][0]["browser_download_url"])
+secondHeaders={'Accept': 'application/octet-stream' }
+csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
+print(csvResponse.status_code)
+print(csvResponse.content.decode("utf-8"))
+previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0)
+"""
+previousDf=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
+print(previousDf.head())
+headHash=previousDf.loc[1,"hash"]
+print(headHash)
 
-# 191ページ目まである
+flg=False
 pageNumber=0
 while True:
+    if flg is True:
+        break
     pageNumber += 1
+    # 最新のランクから順に
     scoreSaberResponse=requests.get(f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={pageNumber}")
     print(scoreSaberResponse.text)
     jsonData=scoreSaberResponse.json()
     if len(jsonData["leaderboards"])==0:
         break
     for j in jsonData["leaderboards"]:
+        if j["songHash"]==headHash:
+            flg=True
+            break
         print(j["songName"])
         # print(j["songHash"])
         if j["songHash"]==previousHash:
@@ -117,35 +140,43 @@ while True:
                         starsList+=[k["stars"]]
 
 
-# DBと同じ考え方でOK
-df=pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
-                         "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
-                         "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
-                         "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
-                data={"id":idList,"leaderboardId":leaderboardIdList,"hash":hashList,"name":nameList,
-                      "bpm":bpmList,"duration":durationList,"songAuthorName":songAuthorNameList,
-                      "levelAuthorName":levelAuthorNameList,"upvotesRatio":upvotesRatioList,
-                      "uploadedAt":uploadedAtList,"automapper":automapperList,"difficulty":difficultyList,
-                      "createdAt":createdAtList,"sageScore":sageScoreList,"njs":njsList,"offset":offsetList,
-                      "notes":notesList,"bombs":bombsList,"obstacles":obstaclesList,"nps":npsList,
-                      "length":lengthList,"characteristic":characteristicList,"events":eventsList,
-                      "chroma":chromaList,"me":meList,"ne":neList,"cinema":cinemaList,"seconds":secondsList,
-                      "errors":errorsList,"warns":warnsList,"resets":resetsList,"stars":starsList})
+if len(idList)==0:
+    nextDf=previousDf
 
-print(df.head())
+else:
+    # DBと同じ考え方でOK
+    df=pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
+                             "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
+                             "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
+                             "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
+                    data={"id":idList,"leaderboardId":leaderboardIdList,"hash":hashList,"name":nameList,
+                          "bpm":bpmList,"duration":durationList,"songAuthorName":songAuthorNameList,
+                          "levelAuthorName":levelAuthorNameList,"upvotesRatio":upvotesRatioList,
+                          "uploadedAt":uploadedAtList,"automapper":automapperList,"difficulty":difficultyList,
+                          "createdAt":createdAtList,"sageScore":sageScoreList,"njs":njsList,"offset":offsetList,
+                          "notes":notesList,"bombs":bombsList,"obstacles":obstaclesList,"nps":npsList,
+                          "length":lengthList,"characteristic":characteristicList,"events":eventsList,
+                          "chroma":chromaList,"me":meList,"ne":neList,"cinema":cinemaList,"seconds":secondsList,
+                          "errors":errorsList,"warns":warnsList,"resets":resetsList,"stars":starsList})
 
-df.plot.box()
-plt.savefig("box.png")
-plt.show()
+    print(df.head())
 
-"""
-plt.figure()
-standardDf=(df-df.mean())/df.std()
-standardDf.plot.box()
-plt.savefig("standardBox.png")
-plt.show()
-"""
+    nextDf=df.append(previousDf,ignore_index=True)
 
-plt.close()
 
-df.to_csv("outcome.csv")
+    """
+    nextDf.plot.box()
+    plt.savefig("box.png")
+    plt.show()
+
+    plt.figure()
+    standardDf=(df-df.mean())/df.std()
+    standardDf.plot.box()
+    plt.savefig("standardBox.png")
+    plt.show()
+
+    plt.close()
+    """
+
+    with open(f'./outcome.csv','w',encoding="utf-8",errors="ignore") as f:
+        nextDf.to_csv(f)
