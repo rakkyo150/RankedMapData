@@ -45,16 +45,25 @@ warnsList=[]
 resetsList=[]
 starsList=[]
 
-# For GitHub Actions
-githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
-headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
-githubResponse=requests.get(url=githubEndpoint,headers=headers)
-releaseJson=githubResponse.json()
-secondHeaders={'Accept': 'application/octet-stream' }
-csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
-previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
 
-# １日１回、0時台の実行で全部取得
+# １日１回、日本時間9時台の実行で全部更新
+if datetime.datetime.now().strftime("%H")=="00":
+    # 空のDataframe
+    previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
+                             "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
+                             "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
+                             "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
+                              index=[])
+else:
+    githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
+    headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
+    githubResponse=requests.get(url=githubEndpoint,headers=headers)
+    releaseJson=githubResponse.json()
+    secondHeaders={'Accept': 'application/octet-stream' }
+    csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
+    previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
+
+# １日１回、日本時間９時台の実行で全部取得
 if datetime.datetime.now().strftime("%H")=="00":
     headHash=0
 # それ以外は追加譜面分だけ
