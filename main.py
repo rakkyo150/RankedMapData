@@ -81,23 +81,24 @@ while True:
         break
     for j in jsonData["leaderboards"]:
         # 更新分だけ取得したので終了
-        if j["songHash"]==headHash:
+        # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
+        if j["songHash"].upper()==headHash:
             flg=True
             break
         # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
-        elif j["songHash"] in previousHashList:
+        elif j["songHash"].upper() in previousHashList:
             pass
         else:
             beatSaberAccessCount += 1
             print(f"{beatSaberAccessCount}回目の取得")
             print(j["songName"])
-            previousHashList.append(j["songHash"])
+            previousHashList.append(j["songHash"].upper())
             # ハッシュが一致する譜面の全難易度の情報を取得していく
             beatSaverResponse=requests.get(f'https://api.beatsaver.com/maps/hash/{j["songHash"]}')
 
-            # 消された譜面も含まれているっぽいので
+            # ScoreSaberに情報はあるけどBeatSaverでは消されたっぽい譜面
             if beatSaverResponse.status_code==404:
-                print(beatSaverResponse.status_code)
+                print(f"{beatSaverResponse.status_code} Not Found: {j['songName']}-{j['id']}-{j['songHash']}")
                 pass
 
             else:
@@ -169,5 +170,6 @@ else:
 
 
 # For local update, change "out" to "."
+# 余分な空行が入るのでnewline設定で回避
 with open(f'out/outcome.csv','w',encoding="utf-8",newline="\n",errors="ignore") as f:
     nextDf.to_csv(f)
