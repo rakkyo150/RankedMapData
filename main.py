@@ -6,7 +6,7 @@ import io
 import datetime
 
 beatSaberAccessCount=0
-previousHash= ""
+previousHashList= []
 
 idList=[]
 leaderboardIdList=[]
@@ -45,16 +45,18 @@ warnsList=[]
 resetsList=[]
 starsList=[]
 
-
-# １日１回、日本時間9時台の実行で全部更新
+# For local run to update all, change "00" to now hour
 if datetime.datetime.now().strftime("%H")=="00":
+    print("全更新")
     # 空のDataframe
     previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
                              "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
                              "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
                              "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
                               index=[])
+    headHash = 0
 else:
+    print("追加譜面分更新")
     githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
     headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
     githubResponse=requests.get(url=githubEndpoint,headers=headers)
@@ -62,48 +64,35 @@ else:
     secondHeaders={'Accept': 'application/octet-stream' }
     csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
     previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
+    headHash = previousDf.loc[0, "hash"]
 
-# １日１回、日本時間９時台の実行で全部取得
-if datetime.datetime.now().strftime("%H")=="00":
-    headHash=0
-# それ以外は追加譜面分だけ
-else:
-    headHash=previousDf.loc[0,"hash"]
-
-"""
-# For local update
-# You need outcome.csv in the same directory
-previousDf=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
-print(previousDf.head())
-headHash=previousDf.loc[0,"hash"]
-print(headHash)
-"""
 
 flg=False
 pageNumber=0
 while True:
+    # 更新するデータがない場合
     if flg is True:
         break
     pageNumber += 1
-    # 最新のランクから順に
+    # ランク譜面の情報を最新のものから順に
     scoreSaberResponse=requests.get(f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={pageNumber}")
-    print(scoreSaberResponse.text)
     jsonData=scoreSaberResponse.json()
     if len(jsonData["leaderboards"])==0:
         break
     for j in jsonData["leaderboards"]:
+        # 更新分だけ取得したので終了
         if j["songHash"]==headHash:
             flg=True
             break
-        print(j["songName"])
-        # print(j["songHash"])
-        if j["songHash"]==previousHash:
+        # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
+        elif j["songHash"] in previousHashList:
             pass
         else:
-            previousHash=j["songHash"]
-            time.sleep(1)
             beatSaberAccessCount += 1
             print(f"{beatSaberAccessCount}回目の取得")
+            print(j["songName"])
+            previousHashList.append(j["songHash"])
+            # ハッシュが一致する譜面の全難易度の情報を取得していく
             beatSaverResponse=requests.get(f'https://api.beatsaver.com/maps/hash/{j["songHash"]}')
 
             # 消された譜面も含まれているっぽいので
@@ -113,7 +102,6 @@ while True:
 
             else:
                 mapDetail=beatSaverResponse.json()
-                print(beatSaverResponse.text)
                 mapDifficulty=mapDetail["versions"][-1]["diffs"]
 
                 for k in mapDifficulty:
@@ -181,5 +169,5 @@ else:
 
 
 # For local update, change "out" to "."
-with open(f'out/outcome.csv','w',encoding="utf-8",errors="ignore") as f:
+with open(f'out/outcome.csv','w',encoding="utf-8",newline="\n",errors="ignore") as f:
     nextDf.to_csv(f)
