@@ -45,6 +45,7 @@ warnsList=[]
 resetsList=[]
 starsList=[]
 
+"""
 # For local run to update all, change "00" to now hour
 if datetime.datetime.now().strftime("%H")=="00":
     print("全更新")
@@ -68,6 +69,16 @@ else:
     for item in previousHashListTemp:
         # のちの比較のために大文字化しておく
         previousHashList.append(item.upper())
+"""
+
+print("全更新")
+# 空のDataframe
+previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
+                         "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
+                         "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
+                         "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
+                          index=[])
+previousHashList = []
 
 pageNumber=0
 while True:
