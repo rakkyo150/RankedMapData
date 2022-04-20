@@ -54,7 +54,7 @@ if datetime.datetime.now().strftime("%H")=="00":
                              "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
                              "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
                               index=[])
-    headHash = 0
+    previousHashList = []
 else:
     print("追加譜面分更新")
     githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
@@ -64,15 +64,13 @@ else:
     secondHeaders={'Accept': 'application/octet-stream' }
     csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
     previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
-    headHash = previousDf.loc[0, "hash"]
+    previousHashListTemp = previousDf["hash"].to_list()
+    for item in previousHashListTemp:
+        # のちの比較のために大文字化しておく
+        previousHashList.append(item.upper())
 
-
-flg=False
 pageNumber=0
 while True:
-    # 更新するデータがない場合
-    if flg is True:
-        break
     pageNumber += 1
     # ランク譜面の情報を最新のものから順に
     scoreSaberResponse=requests.get(f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={pageNumber}")
@@ -82,11 +80,8 @@ while True:
     for j in jsonData["leaderboards"]:
         # 更新分だけ取得したので終了
         # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
-        if j["songHash"].upper()==headHash:
-            flg=True
-            break
         # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
-        elif j["songHash"].upper() in previousHashList:
+        if j["songHash"].upper() in previousHashList:
             pass
         else:
             beatSaberAccessCount += 1
