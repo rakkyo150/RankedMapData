@@ -12,19 +12,33 @@ idList=[]
 leaderboardIdList=[]
 hashList=[]
 nameList=[]
+descriptionList=[]
+uploaderIdList=[]
+uploaderNameList=[]
+uploaderHashList=[]
+uploaderAvatarList=[]
+uploaderLoginTypeList=[]
+uploaderCuratorList=[]
 bpmList=[]
 # 曲全体の長さ
 durationList=[]
 songAuthorNameList=[]
 levelAuthorNameList=[]
+upvotesList=[]
+downvotesList=[]
 upvotesRatioList=[]
 # 初回アップロード
 uploadedAtList=[]
-automapperList=[]
-# 最終アップロード
+# 初回マップ作成
 createdAtList=[]
-sageScoreList=[]
+# 最新マップ関連情報アップデート
+updatedAtList=[]
+# マップ内容アップデート
+lastPublishedAtList=[]
+automapperList=[]
+qualifiedList=[]
 difficultyList=[]
+sageScoreList=[]
 njsList=[]
 offsetList=[]
 notesList=[]
@@ -44,6 +58,11 @@ errorsList=[]
 warnsList=[]
 resetsList=[]
 starsList=[]
+maxScoreList=[]
+downloadUrlList=[]
+coverUrlList=[]
+previewUrlList=[]
+tagsList=[]
 
 """
 # For local run to update all, change "00" to now hour
@@ -73,10 +92,14 @@ else:
 
 print("全更新")
 # 空のDataframe
-previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
-                         "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
+previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","description","uploaderId",
+                         "uploaderName","uploaderHash","uploaderAvatar","uploaderLoginType",
+                         "uploaderCurator","bpm","duration","songAuthorName","levelAuthorName",
+                         "upvotes","downvotes","upvotesRatio","uploadedAt","createdAt","updatedAt",
+                         "lastPublishedAt","automapper","qualified","difficulty","sageScore",
                          "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
-                         "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
+                         "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars",
+                         "maxScore","downloadUrl","coverUrl","previewUrl","tags"],
                           index=[])
 previousHashList = []
 
@@ -109,6 +132,7 @@ while True:
 
             else:
                 mapDetail=beatSaverResponse.json()
+                print(mapDetail)
                 mapDifficulty=mapDetail["versions"][-1]["diffs"]
 
                 for k in mapDifficulty:
@@ -118,14 +142,26 @@ while True:
                         leaderboardIdList+=[j["id"]]
                         hashList += [j["songHash"]]
                         nameList+=[mapDetail["name"]]
+                        descriptionList += [mapDetail["description"]]
+                        uploaderIdList += [mapDetail["uploader"]["id"]]
+                        uploaderNameList += [mapDetail["uploader"]["name"]]
+                        uploaderHashList += [mapDetail["uploader"]["hash"]]
+                        uploaderAvatarList += [mapDetail["uploader"]["avatar"]]
+                        uploaderLoginTypeList += [mapDetail["uploader"]["type"]]
+                        uploaderCuratorList += [mapDetail["uploader"]["curator"]]
                         bpmList+=[mapDetail["metadata"]["bpm"]]
                         durationList+=[mapDetail["metadata"]["duration"]]
                         songAuthorNameList+=[mapDetail["metadata"]["songAuthorName"]]
                         levelAuthorNameList+=[mapDetail["metadata"]["levelAuthorName"]]
+                        upvotesList += [mapDetail["stats"]["upvotes"]]
+                        downvotesList += [mapDetail["stats"]["downvotes"]]
                         upvotesRatioList+=[mapDetail["stats"]["score"]]
                         uploadedAtList+=[mapDetail["uploaded"]]
+                        createdAtList += [mapDetail["createdAt"]]
+                        updatedAtList += [mapDetail["updatedAt"]]
+                        lastPublishedAtList += [mapDetail["lastPublishedAt"]]
                         automapperList+=[mapDetail["automapper"]]
-                        createdAtList+=[mapDetail["versions"][-1]["createdAt"]]
+                        qualifiedList += [mapDetail["qualified"]]
                         if "sageScore" in mapDetail["versions"][-1]:
                             sageScoreList+=[mapDetail["versions"][-1]["sageScore"]]
                         else:
@@ -149,26 +185,48 @@ while True:
                         warnsList+=[k["paritySummary"]["warns"]]
                         resetsList+=[k["paritySummary"]["resets"]]
                         starsList+=[k["stars"]]
-
+                        maxScoreList += [k["maxScore"]]
+                        downloadUrlList += [mapDetail["versions"][-1]["downloadURL"]]
+                        coverUrlList += [mapDetail["versions"][-1]["coverURL"]]
+                        previewUrlList += [mapDetail["versions"][-1]["previewURL"]]
+                        tagStr = ""
+                        if "tags" in mapDetail:
+                            for tag in mapDetail["tags"]:
+                                tagStr += tag + ","
+                            tagStr = tagStr[:-1]
+                        else:
+                            tagStr = None
+                        tagsList += [tagStr]
 
 if len(idList)==0:
     nextDf=previousDf
 
 else:
     # DBと同じ考え方でOK
-    df=pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
-                             "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
-                             "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
-                             "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
+    df=pd.DataFrame(columns=["id","leaderboardId","hash","name","description","uploaderId",
+                         "uploaderName","uploaderHash","uploaderAvatar","uploaderLoginType",
+                         "uploaderCurator","bpm","duration","songAuthorName","levelAuthorName",
+                         "upvotes","downvotes","upvotesRatio","uploadedAt","createdAt","updatedAt",
+                         "lastPublishedAt","automapper","qualified","difficulty","sageScore",
+                         "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
+                         "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars",
+                         "maxScore","downloadUrl","coverUrl","previewUrl","tags"],
                     data={"id":idList,"leaderboardId":leaderboardIdList,"hash":hashList,"name":nameList,
+                          "description":descriptionList,"uploaderId":uploaderIdList,"uploaderName":uploaderNameList,
+                          "uploaderHash":uploaderHashList,"uploaderAvatar":uploaderAvatarList,
+                          "uploaderLoginType":uploaderLoginTypeList,"uploaderCurator":uploaderCuratorList,
                           "bpm":bpmList,"duration":durationList,"songAuthorName":songAuthorNameList,
-                          "levelAuthorName":levelAuthorNameList,"upvotesRatio":upvotesRatioList,
-                          "uploadedAt":uploadedAtList,"automapper":automapperList,"difficulty":difficultyList,
-                          "createdAt":createdAtList,"sageScore":sageScoreList,"njs":njsList,"offset":offsetList,
+                          "levelAuthorName":levelAuthorNameList,"upvotes":upvotesList,"downvotes":downvotesList,
+                          "upvotesRatio":upvotesRatioList,"uploadedAt":uploadedAtList,"createdAt":createdAtList,
+                          "updatedAt":updatedAtList,"lastPublishedAt":lastPublishedAtList,"automapper":automapperList,
+                          "qualified":qualifiedList,"difficulty":difficultyList,
+                          "sageScore":sageScoreList,"njs":njsList,"offset":offsetList,
                           "notes":notesList,"bombs":bombsList,"obstacles":obstaclesList,"nps":npsList,
                           "length":lengthList,"characteristic":characteristicList,"events":eventsList,
                           "chroma":chromaList,"me":meList,"ne":neList,"cinema":cinemaList,"seconds":secondsList,
-                          "errors":errorsList,"warns":warnsList,"resets":resetsList,"stars":starsList})
+                          "errors":errorsList,"warns":warnsList,"resets":resetsList,"stars":starsList,
+                          "maxScore":maxScoreList,"downloadUrl":downvotesList,"coverUrl":coverUrlList,
+                          "previewUrl":previewUrlList,"tags":tagsList})
 
     print(df.head())
 
@@ -177,5 +235,5 @@ else:
 
 # For local update, change "out" to "."
 # 余分な空行が入るのでnewline設定で回避
-with open(f'out/outcome.csv','w',encoding="utf-8",newline="\n",errors="ignore") as f:
+with open(f'./outcome1.csv','w',encoding="utf-8",newline="\n",errors="ignore") as f:
     nextDf.to_csv(f)
