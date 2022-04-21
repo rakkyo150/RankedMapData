@@ -18,15 +18,27 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |leaderboardId|the one at the end of each ScoreSaber score link|
 |hash|hash of the map|
 |name|name of the map|
+|description|map description|
+|uploaderId|uploader id|
+|uploaderName|uploader name|
+|uploaderHash|uploader hash|
+|uploaderAvatar|uploader icon|
+|uploaderLoginType|uploader login type|
+|uploaderCurator|the uploader is a curator or not|
 |bpm|Beat Per Minute|
 |duration|length of the whole map in seconds|
 |songAuthorName|song author name|
 |levelAuthorName|map author name|
+|upvotes|number of upvotes|
+|downvotes|number of downvotes|
 |upvotesRatio|upvotes ratio|
 |uploadedAt|Date and time when the map was first uploaded|
+|createdAt|Date and time when the map was created|
+|updatedAt|Date and time when the map info was updated|
+|lastPublishedAt|the latest Date and time when the map itself was published|
 |automapper|automapper or not|
+|qualified|the map is qualified or not|
 |difficulty|difficulty of the score (Easy to ExpertPlus)|
-|createdAt|when the map was last updated|
 |sageScore|how much the map is like what is made with BeatSage|
 |njs|Notes Jump Speed (in m/s)|
 |offset|offset|
@@ -45,3 +57,9 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |errors|Number of errors in the map|
 |warns|number of warns in the map|
 |resets|number of resets in the map|
+|stars|number of the map star|
+|maxScore|combo multiplied max score|
+|downloadRul|map download url|
+|coverUrl|map cover url|
+|previewUrl|map preview url|
+|tags|map tags|

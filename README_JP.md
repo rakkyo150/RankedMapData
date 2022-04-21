@@ -20,15 +20,27 @@ BeatSaverから取得できるランク譜面のデータのcsvです<br>
 |leaderboardId|ScoreSaberの各譜面のリンクの末尾にあるやつ|
 |hash|譜面のハッシュ|
 |name|譜面名|
+|description|譜面の説明|
+|uploaderId|譜面アップロード者のID|
+|uploaderName|譜面アップロード者の名前|
+|uploaderHash|譜面アップロード者のハッシュ|
+|uploaderAvatar|譜面アップロード者のアイコン|
+|uploaderLoginType|譜面アップロード者のログインの種類|
+|uploaderCurator|譜面アップロード者がCuratorかどうか|
 |bpm|Beat Per Minute|
 |duration|譜面全体の長さ(単位は秒)|
 |songAuthorName|曲の作者|
 |levelAuthorName|譜面の作者|
+|upvotes|アップボートの数|
+|downvotes|ダウンボートの数|
 |upvotesRatio|アップボートの割合|
 |uploadedAt|譜面を最初にアップロードした日時|
+|createdAt|譜面製作を完了した日時|
+|updatedAt|譜面情報を更新した日時|
+|lastPublishedAt|譜面をパブリッシュした日時のうちもっとも新しいもの|
 |automapper|自動マッピングかどうか|
+|qualified|qualifiedの譜面かどうか|
 |difficulty|譜面の難易度(EasyからExpertPlus)|
-|createdAt|譜面の最新の更新日|
 |sageScore|どれだけBeatSageで作った譜面っぽいか|
 |njs|Notes Jump Speed(単位はm/s)|
 |offset|オフセット|
@@ -47,5 +59,11 @@ BeatSaverから取得できるランク譜面のデータのcsvです<br>
 |errors|譜面に含まれるエラー数|
 |warns|譜面に含まれるwarns数|
 |resets|譜面に含まれるリセット数|
+|stars|譜面の星の数|
+|maxScore|コンボ倍率のみをかけた最大のスコア|
+|downloadUrl|譜面のダウンロードURL|
+|coverUrl|譜面のカバー画像のURL|
+|previewUrl|譜面のプレビューのURL|
+|tags|譜面のタグ情報|
 
 
