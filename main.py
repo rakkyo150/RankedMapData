@@ -132,7 +132,6 @@ while True:
 
             else:
                 mapDetail = beatSaverResponse.json()
-                print(mapDetail)
                 mapDifficulty = mapDetail["versions"][-1]["diffs"]
 
                 for k in mapDifficulty:
@@ -252,5 +251,5 @@ else:
 
 # For local update, change "out" to "."
 # 余分な空行が入るのでnewline設定で回避
-with open(f'./outcome1.csv', 'w', encoding="utf-8", newline="\n", errors="ignore") as f:
+with open(f'out/outcome1.csv', 'w', encoding="utf-8", newline="\n", errors="ignore") as f:
     nextDf.to_csv(f)
