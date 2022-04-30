@@ -136,7 +136,9 @@ while True:
 
                 for k in mapDifficulty:
 
-                    if "stars" in k:
+                    # The PretenderだけBeatSaverでランクとして登録されていないようなので
+                    if ("stars" in k) or \
+                            (j["ranked"]==True and j["songHash"].upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251"):
                         idList += [mapDetail["id"]]
                         leaderboardIdList += [j["id"]]
                         hashList += [j["songHash"]]
@@ -183,7 +185,11 @@ while True:
                         errorsList += [k["paritySummary"]["errors"]]
                         warnsList += [k["paritySummary"]["warns"]]
                         resetsList += [k["paritySummary"]["resets"]]
-                        starsList += [k["stars"]]
+                        if j["songHash"].upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251":
+                            # The PretenderはExpert+のひとつの難易度しかないので問題ない
+                            starsList += [j["stars"]]
+                        else:
+                            starsList += [k["stars"]]
                         maxScoreList += [k["maxScore"]]
                         downloadUrlList += [mapDetail["versions"][-1]["downloadURL"]]
                         coverUrlList += [mapDetail["versions"][-1]["coverURL"]]
