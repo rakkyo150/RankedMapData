@@ -164,11 +164,14 @@ while True:
                         neList += [beatSaverDataPerDifficulty.get("ne")]
                         cinemaList += [beatSaverDataPerDifficulty.get("cinema")]
                         secondsList += [beatSaverDataPerDifficulty.get("seconds")]
-                        errorsList += [beatSaverDataPerDifficulty.get("paritySummary").get("errors")]
+                        errorsList += [
+                            beatSaverDataPerDifficulty.get("paritySummary").get("errors")]
                         warnsList += [beatSaverDataPerDifficulty.get("paritySummary").get("warns")]
-                        resetsList += [beatSaverDataPerDifficulty.get("paritySummary").get("resets")]
+                        resetsList += [
+                            beatSaverDataPerDifficulty.get("paritySummary").get("resets")]
                         if (
-                                scoreSaberDataPerDifficulty.get("songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
+                                scoreSaberDataPerDifficulty.get(
+                                    "songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
                                 scoreSaberDataPerDifficulty.get(
                                     "songHash").upper() == "FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
                                 scoreSaberDataPerDifficulty.get(
@@ -210,48 +213,49 @@ if len(idList) == 0:
 
 else:
     # DBと同じ考え方でOK
-    addedDf = pd.DataFrame(columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
-                               "uploaderName", "uploaderHash", "uploaderAvatar",
-                               "uploaderLoginType",
-                               "uploaderCurator", "bpm", "duration", "songAuthorName",
-                               "levelAuthorName",
-                               "upvotes", "downvotes", "upvotesRatio", "uploadedAt", "createdAt",
-                               "updatedAt",
-                               "lastPublishedAt", "automapper", "qualified", "difficulty",
-                               "sageScore",
-                               "njs", "offset", "notes", "bombs", "obstacles", "nps", "length",
-                               "characteristic",
-                               "events", "chroma", "me", "ne", "cinema", "seconds", "errors",
-                               "warns", "resets", "stars",
-                               "maxScore", "downloadUrl", "coverUrl", "previewUrl", "tags"],
-                      data={"id": idList, "leaderboardId": leaderboardIdList, "hash": hashList,
-                            "name": nameList,
-                            "description": descriptionList, "uploaderId": uploaderIdList,
-                            "uploaderName": uploaderNameList,
-                            "uploaderHash": uploaderHashList, "uploaderAvatar": uploaderAvatarList,
-                            "uploaderLoginType": uploaderLoginTypeList,
-                            "uploaderCurator": uploaderCuratorList,
-                            "bpm": bpmList, "duration": durationList,
-                            "songAuthorName": songAuthorNameList,
-                            "levelAuthorName": levelAuthorNameList, "upvotes": upvotesList,
-                            "downvotes": downvotesList,
-                            "upvotesRatio": upvotesRatioList, "uploadedAt": uploadedAtList,
-                            "createdAt": createdAtList,
-                            "updatedAt": updatedAtList, "lastPublishedAt": lastPublishedAtList,
-                            "automapper": automapperList,
-                            "qualified": qualifiedList, "difficulty": difficultyList,
-                            "sageScore": sageScoreList, "njs": njsList, "offset": offsetList,
-                            "notes": notesList, "bombs": bombsList, "obstacles": obstaclesList,
-                            "nps": npsList,
-                            "length": lengthList, "characteristic": characteristicList,
-                            "events": eventsList,
-                            "chroma": chromaList, "me": meList, "ne": neList, "cinema": cinemaList,
-                            "seconds": secondsList,
-                            "errors": errorsList, "warns": warnsList, "resets": resetsList,
-                            "stars": starsList,
-                            "maxScore": maxScoreList, "downloadUrl": downvotesList,
-                            "coverUrl": coverUrlList,
-                            "previewUrl": previewUrlList, "tags": tagsList})
+    addedDf = pd.DataFrame(
+        columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
+                 "uploaderName", "uploaderHash", "uploaderAvatar",
+                 "uploaderLoginType",
+                 "uploaderCurator", "bpm", "duration", "songAuthorName",
+                 "levelAuthorName",
+                 "upvotes", "downvotes", "upvotesRatio", "uploadedAt", "createdAt",
+                 "updatedAt",
+                 "lastPublishedAt", "automapper", "qualified", "difficulty",
+                 "sageScore",
+                 "njs", "offset", "notes", "bombs", "obstacles", "nps", "length",
+                 "characteristic",
+                 "events", "chroma", "me", "ne", "cinema", "seconds", "errors",
+                 "warns", "resets", "stars",
+                 "maxScore", "downloadUrl", "coverUrl", "previewUrl", "tags"],
+        data={"id": idList, "leaderboardId": leaderboardIdList, "hash": hashList,
+              "name": nameList,
+              "description": descriptionList, "uploaderId": uploaderIdList,
+              "uploaderName": uploaderNameList,
+              "uploaderHash": uploaderHashList, "uploaderAvatar": uploaderAvatarList,
+              "uploaderLoginType": uploaderLoginTypeList,
+              "uploaderCurator": uploaderCuratorList,
+              "bpm": bpmList, "duration": durationList,
+              "songAuthorName": songAuthorNameList,
+              "levelAuthorName": levelAuthorNameList, "upvotes": upvotesList,
+              "downvotes": downvotesList,
+              "upvotesRatio": upvotesRatioList, "uploadedAt": uploadedAtList,
+              "createdAt": createdAtList,
+              "updatedAt": updatedAtList, "lastPublishedAt": lastPublishedAtList,
+              "automapper": automapperList,
+              "qualified": qualifiedList, "difficulty": difficultyList,
+              "sageScore": sageScoreList, "njs": njsList, "offset": offsetList,
+              "notes": notesList, "bombs": bombsList, "obstacles": obstaclesList,
+              "nps": npsList,
+              "length": lengthList, "characteristic": characteristicList,
+              "events": eventsList,
+              "chroma": chromaList, "me": meList, "ne": neList, "cinema": cinemaList,
+              "seconds": secondsList,
+              "errors": errorsList, "warns": warnsList, "resets": resetsList,
+              "stars": starsList,
+              "maxScore": maxScoreList, "downloadUrl": downvotesList,
+              "coverUrl": coverUrlList,
+              "previewUrl": previewUrlList, "tags": tagsList})
 
     print(addedDf.head())
 
