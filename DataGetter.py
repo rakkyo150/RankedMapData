@@ -18,7 +18,7 @@ def get_ranked_stars_data(beat_saver_data_per_difficulty, score_saber_data_per_d
     score_saber_ranked_stars_data_url = f"https://scoresaber.com/api/leaderboard/by-hash/" \
                                         f"{score_saber_data_per_difficulty.get('songHash').upper()}" \
                                         f"/info?difficulty={url_difficulty}" \
-                                        f"&gameMode={'Solo'+beat_saver_data_per_difficulty.get('characteristic')}"
+                                        f"&gameMode={'Solo' + beat_saver_data_per_difficulty.get('characteristic')}"
     score_saber_ranked_stars_data_response = requests.get(score_saber_ranked_stars_data_url)
     score_saber_ranked_stars_data_json = score_saber_ranked_stars_data_response.json()
     return score_saber_ranked_stars_data_json
