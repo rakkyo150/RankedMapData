@@ -60,32 +60,6 @@ coverUrlList = []
 previewUrlList = []
 tagsList = []
 
-"""
-# For local run to update all, change "00" to now hour
-if datetime.datetime.now().strftime("%H")=="00":
-    print("全更新")
-    # 空のDataframe
-    previousDf = pd.DataFrame(columns=["id","leaderboardId","hash","name","bpm","duration","songAuthorName","levelAuthorName",
-                             "upvotesRatio","uploadedAt","automapper","difficulty","createdAt","sageScore",
-                             "njs","offset","notes","bombs","obstacles","nps","length","characteristic",
-                             "events","chroma","me","ne","cinema","seconds","errors","warns","resets","stars"],
-                              index=[])
-    previousHashList = []
-else:
-    print("追加譜面分更新")
-    githubEndpoint="https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
-    headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
-    githubResponse=requests.get(url=githubEndpoint,headers=headers)
-    releaseJson=githubResponse.json()
-    secondHeaders={'Accept': 'application/octet-stream' }
-    csvResponse=requests.get(url=releaseJson["assets"][0]["browser_download_url"],headers=secondHeaders)
-    previousDf = pd.read_csv(io.BytesIO(csvResponse.content),sep=",",index_col=0,encoding="utf-8")
-    previousHashListTemp = previousDf["hash"].to_list()
-    for item in previousHashListTemp:
-        # のちの比較のために大文字化しておく
-        previousHashList.append(item.upper())
-"""
-
 print("全更新")
 # 空のDataframe
 previousDf = pd.DataFrame(
@@ -99,7 +73,6 @@ previousDf = pd.DataFrame(
              "stars",
              "maxScore", "downloadUrl", "coverUrl", "previewUrl", "tags"],
     index=[])
-previousHashList = []
 
 pageNumber = 0
 while True:
@@ -108,95 +81,117 @@ while True:
     scoreSaberResponse = requests.get(
         f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={pageNumber}")
     jsonData = scoreSaberResponse.json()
-    if len(jsonData["leaderboards"]) == 0:
+    if len(jsonData.get("leaderboards")) == 0:
         break
-    for j in jsonData["leaderboards"]:
+    for j in jsonData.get("leaderboards"):
         # 更新分だけ取得したので終了
         # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
         # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
-        if j["songHash"].upper() in previousHashList:
+        if j.get("songHash").upper() in previousHashList:
             pass
         else:
             beatSaberAccessCount += 1
             print(f"{beatSaberAccessCount}回目の取得")
-            print(j["songName"])
-            previousHashList.append(j["songHash"].upper())
+            print(j.get("songName"))
+            previousHashList.append(j.get("songHash").upper())
             # ハッシュが一致する譜面の全難易度の情報を取得していく
-            beatSaverResponse = requests.get(f'https://api.beatsaver.com/maps/hash/{j["songHash"]}')
+            beatSaverResponse = requests.get(f'https://api.beatsaver.com/maps/hash/{j.get("songHash")}')
 
             # ScoreSaberに情報はあるけどBeatSaverでは消されたっぽい譜面
             if beatSaverResponse.status_code == 404:
                 print(
-                    f"{beatSaverResponse.status_code} Not Found: {j['songName']}-{j['id']}-{j['songHash']}")
+                    f"{beatSaverResponse.status_code} Not Found: {j.get('songName')}-{j.get('id')}-{j.get('songHash')}")
                 pass
 
             else:
                 mapDetail = beatSaverResponse.json()
-                mapDifficulty = mapDetail["versions"][-1]["diffs"]
+                mapDifficulty = mapDetail.get("versions")[-1].get("diffs")
 
                 for k in mapDifficulty:
 
-                    # The PretenderだけBeatSaverでランクとして登録されていないようなので
+                    # 以下BeatSaverでランク情報が抜けてたものたち
+                    # The Pretender
+                    # Valley of Voices
+                    # All My Love
                     if ("stars" in k) or \
-                            (j["ranked"]==True and j["songHash"].upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251"):
-                        idList += [mapDetail["id"]]
-                        leaderboardIdList += [j["id"]]
-                        hashList += [j["songHash"]]
-                        nameList += [mapDetail["name"]]
-                        descriptionList += [mapDetail["description"]]
-                        uploaderIdList += [mapDetail["uploader"]["id"]]
-                        uploaderNameList += [mapDetail["uploader"]["name"]]
-                        uploaderHashList += [mapDetail["uploader"]["hash"]]
-                        uploaderAvatarList += [mapDetail["uploader"]["avatar"]]
-                        uploaderLoginTypeList += [mapDetail["uploader"]["type"]]
-                        uploaderCuratorList += [mapDetail["uploader"]["curator"]]
-                        bpmList += [mapDetail["metadata"]["bpm"]]
-                        durationList += [mapDetail["metadata"]["duration"]]
-                        songAuthorNameList += [mapDetail["metadata"]["songAuthorName"]]
-                        levelAuthorNameList += [mapDetail["metadata"]["levelAuthorName"]]
-                        upvotesList += [mapDetail["stats"]["upvotes"]]
-                        downvotesList += [mapDetail["stats"]["downvotes"]]
-                        upvotesRatioList += [mapDetail["stats"]["score"]]
-                        uploadedAtList += [mapDetail["uploaded"]]
-                        createdAtList += [mapDetail["createdAt"]]
-                        updatedAtList += [mapDetail["updatedAt"]]
-                        lastPublishedAtList += [mapDetail["lastPublishedAt"]]
-                        automapperList += [mapDetail["automapper"]]
-                        qualifiedList += [mapDetail["qualified"]]
-                        if "sageScore" in mapDetail["versions"][-1]:
-                            sageScoreList += [mapDetail["versions"][-1]["sageScore"]]
+                            (j.get("songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
+                                    j.get("songHash").upper() == "FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
+                                    j.get("songHash").upper() == "7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
+                        idList += [mapDetail.get("id")]
+                        leaderboardIdList += [j.get("id")]
+                        hashList += [j.get("songHash")]
+                        nameList += [mapDetail.get("name")]
+                        descriptionList += [mapDetail.get("description")]
+                        uploaderIdList += [mapDetail.get("uploader").get("id")]
+                        uploaderNameList += [mapDetail.get("uploader").get("name")]
+                        uploaderHashList += [mapDetail.get("uploader").get("hash")]
+                        uploaderAvatarList += [mapDetail.get("uploader").get("avatar")]
+                        uploaderLoginTypeList += [mapDetail.get("uploader").get("type")]
+                        uploaderCuratorList += [mapDetail.get("uploader").get("curator")]
+                        bpmList += [mapDetail.get("metadata").get("bpm")]
+                        durationList += [mapDetail.get("metadata").get("duration")]
+                        songAuthorNameList += [mapDetail.get("metadata").get("songAuthorName")]
+                        levelAuthorNameList += [mapDetail.get("metadata").get("levelAuthorName")]
+                        upvotesList += [mapDetail.get("stats").get("upvotes")]
+                        downvotesList += [mapDetail.get("stats").get("downvotes")]
+                        upvotesRatioList += [mapDetail.get("stats").get("score")]
+                        uploadedAtList += [mapDetail.get("uploaded")]
+                        createdAtList += [mapDetail.get("createdAt")]
+                        updatedAtList += [mapDetail.get("updatedAt")]
+                        lastPublishedAtList += [mapDetail.get("lastPublishedAt")]
+                        automapperList += [mapDetail.get("automapper")]
+                        qualifiedList += [mapDetail.get("qualified")]
+                        if "sageScore" in mapDetail.get("versions")[-1]:
+                            sageScoreList += [mapDetail.get("versions")[-1].get("sageScore")]
                         else:
                             sageScoreList += [None]
-                        difficultyList += [k["difficulty"]]
-                        njsList += [k["njs"]]
-                        offsetList += [k["offset"]]
-                        notesList += [k["notes"]]
-                        bombsList += [k["bombs"]]
-                        obstaclesList += [k["obstacles"]]
-                        npsList += [k["nps"]]
-                        lengthList += [k["length"]]
-                        characteristicList += [k["characteristic"]]
-                        eventsList += [k["events"]]
-                        chromaList += [k["chroma"]]
-                        meList += [k["me"]]
-                        neList += [k["ne"]]
-                        cinemaList += [k["cinema"]]
-                        secondsList += [k["seconds"]]
-                        errorsList += [k["paritySummary"]["errors"]]
-                        warnsList += [k["paritySummary"]["warns"]]
-                        resetsList += [k["paritySummary"]["resets"]]
-                        if j["songHash"].upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251":
-                            # The PretenderはExpert+のひとつの難易度しかないので問題ない
-                            starsList += [j["stars"]]
+                        difficultyList += [k.get("difficulty")]
+                        njsList += [k.get("njs")]
+                        offsetList += [k.get("offset")]
+                        notesList += [k.get("notes")]
+                        bombsList += [k.get("bombs")]
+                        obstaclesList += [k.get("obstacles")]
+                        npsList += [k.get("nps")]
+                        lengthList += [k.get("length")]
+                        characteristicList += [k.get("characteristic")]
+                        eventsList += [k.get("events")]
+                        chromaList += [k.get("chroma")]
+                        meList += [k.get("me")]
+                        neList += [k.get("ne")]
+                        cinemaList += [k.get("cinema")]
+                        secondsList += [k.get("seconds")]
+                        errorsList += [k.get("paritySummary").get("errors")]
+                        warnsList += [k.get("paritySummary").get("warns")]
+                        resetsList += [k.get("paritySummary").get("resets")]
+                        if (j.get("songHash").upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
+                    j.get("songHash").upper()=="FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
+                    j.get("songHash").upper()=="7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
+                            # 全難易度がランクなのでできること
+                            urlDifficulty=0
+                            if(k.get("difficulty")=="Easy"):
+                                urlDifficulty=1
+                            elif(k.get("difficulty")=="Normal"):
+                                urlDifficulty=3
+                            elif(k.get("difficulty")=="Hard"):
+                                urlDifficulty=5
+                            elif(k.get("difficulty")=="Expert"):
+                                urlDifficulty=7
+                            elif(k.get("difficulty")=="ExpertPlus"):
+                                urlDifficulty=9
+                            leaderboardUrl=f"https://scoresaber.com/api/leaderboard/by-hash/{j.get('songHash').upper()}/info?difficulty={urlDifficulty}"
+                            leaderboardResponse = requests.get(leaderboardUrl)
+                            leaderboardJson=leaderboardResponse.json()
+                            starsList += [leaderboardJson.get("stars")]
                         else:
-                            starsList += [k["stars"]]
-                        maxScoreList += [k["maxScore"]]
-                        downloadUrlList += [mapDetail["versions"][-1]["downloadURL"]]
-                        coverUrlList += [mapDetail["versions"][-1]["coverURL"]]
-                        previewUrlList += [mapDetail["versions"][-1]["previewURL"]]
+                            starsList += [k.get("stars")]
+                        maxScoreList += [k.get("maxScore")]
+                        downloadUrlList += [mapDetail.get("versions")[-1].get("downloadURL")]
+                        coverUrlList += [mapDetail.get("versions")[-1].get("coverURL")]
+                        previewUrlList += [mapDetail.get("versions")[-1].get("previewURL")]
                         tagStr = ""
                         if "tags" in mapDetail:
-                            for tag in mapDetail["tags"]:
+
+                            for tag in mapDetail.get("tags"):
                                 tagStr += tag + ","
                             tagStr = tagStr[:-1]
                         else:
