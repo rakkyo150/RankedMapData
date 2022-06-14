@@ -212,10 +212,6 @@ class DataGetter:
                         tag_str = None
                     self.tagsList += [tag_str]
 
-        if len(self.idList) == 0:
-            next_df = previous_df
-            return next_df
-
         # DBと同じ考え方でOK
         added_df = pd.DataFrame(
             columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
