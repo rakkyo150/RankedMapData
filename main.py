@@ -1,5 +1,3 @@
-import pandas as pd
-
 import DataGetter
 
 print("全更新")
