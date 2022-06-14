@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 
-beatSaberAccessCount = 0
+getDataFromBeatSaverCount = 0
 previousHashList = []
 
 idList = []
@@ -80,46 +80,50 @@ while True:
     # ランク譜面の情報を最新のものから順に
     scoreSaberResponse = requests.get(
         f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={pageNumber}")
-    jsonData = scoreSaberResponse.json()
-    if len(jsonData.get("leaderboards")) == 0:
+    scoreSaberJsonData = scoreSaberResponse.json()
+    if len(scoreSaberJsonData.get("leaderboards")) == 0:
         break
-    for j in jsonData.get("leaderboards"):
+    for scoreSaberDataPerDifficulty in scoreSaberJsonData.get("leaderboards"):
         # 更新分だけ取得したので終了
         # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
         # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
-        if j.get("songHash").upper() in previousHashList:
+        if scoreSaberDataPerDifficulty.get("songHash").upper() in previousHashList:
             pass
         else:
-            beatSaberAccessCount += 1
-            print(f"{beatSaberAccessCount}回目の取得")
-            print(j.get("songName"))
-            previousHashList.append(j.get("songHash").upper())
+            getDataFromBeatSaverCount += 1
+            print(f"{getDataFromBeatSaverCount}回目の取得")
+            print(scoreSaberDataPerDifficulty.get("songName"))
+            previousHashList.append(scoreSaberDataPerDifficulty.get("songHash").upper())
             # ハッシュが一致する譜面の全難易度の情報を取得していく
-            beatSaverResponse = requests.get(f'https://api.beatsaver.com/maps/hash/{j.get("songHash")}')
+            beatSaverResponse = requests.get(
+                f'https://api.beatsaver.com/maps/hash/{scoreSaberDataPerDifficulty.get("songHash")}')
 
             # ScoreSaberに情報はあるけどBeatSaverでは消されたっぽい譜面
             if beatSaverResponse.status_code == 404:
                 print(
-                    f"{beatSaverResponse.status_code} Not Found: {j.get('songName')}-{j.get('id')}-{j.get('songHash')}")
+                    f"{beatSaverResponse.status_code} Not Found: {scoreSaberDataPerDifficulty.get('songName')}-{scoreSaberDataPerDifficulty.get('id')}-{scoreSaberDataPerDifficulty.get('songHash')}")
                 pass
 
             else:
                 mapDetail = beatSaverResponse.json()
                 mapDifficulty = mapDetail.get("versions")[-1].get("diffs")
 
-                for k in mapDifficulty:
+                for beatSaverDataPerDifficulty in mapDifficulty:
 
                     # 以下BeatSaverでランク情報が抜けてたものたち
                     # The Pretender
                     # Valley of Voices
                     # All My Love
-                    if ("stars" in k) or \
-                            (j.get("songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
-                                    j.get("songHash").upper() == "FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
-                                    j.get("songHash").upper() == "7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
+                    if ("stars" in beatSaverDataPerDifficulty) or \
+                            (scoreSaberDataPerDifficulty.get(
+                                "songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
+                             scoreSaberDataPerDifficulty.get(
+                                 "songHash").upper() == "FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
+                             scoreSaberDataPerDifficulty.get(
+                                 "songHash").upper() == "7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
                         idList += [mapDetail.get("id")]
-                        leaderboardIdList += [j.get("id")]
-                        hashList += [j.get("songHash")]
+                        leaderboardIdList += [scoreSaberDataPerDifficulty.get("id")]
+                        hashList += [scoreSaberDataPerDifficulty.get("songHash")]
                         nameList += [mapDetail.get("name")]
                         descriptionList += [mapDetail.get("description")]
                         uploaderIdList += [mapDetail.get("uploader").get("id")]
@@ -145,46 +149,49 @@ while True:
                             sageScoreList += [mapDetail.get("versions")[-1].get("sageScore")]
                         else:
                             sageScoreList += [None]
-                        difficultyList += [k.get("difficulty")]
-                        njsList += [k.get("njs")]
-                        offsetList += [k.get("offset")]
-                        notesList += [k.get("notes")]
-                        bombsList += [k.get("bombs")]
-                        obstaclesList += [k.get("obstacles")]
-                        npsList += [k.get("nps")]
-                        lengthList += [k.get("length")]
-                        characteristicList += [k.get("characteristic")]
-                        eventsList += [k.get("events")]
-                        chromaList += [k.get("chroma")]
-                        meList += [k.get("me")]
-                        neList += [k.get("ne")]
-                        cinemaList += [k.get("cinema")]
-                        secondsList += [k.get("seconds")]
-                        errorsList += [k.get("paritySummary").get("errors")]
-                        warnsList += [k.get("paritySummary").get("warns")]
-                        resetsList += [k.get("paritySummary").get("resets")]
-                        if (j.get("songHash").upper()=="5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
-                    j.get("songHash").upper()=="FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
-                    j.get("songHash").upper()=="7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
+                        difficultyList += [beatSaverDataPerDifficulty.get("difficulty")]
+                        njsList += [beatSaverDataPerDifficulty.get("njs")]
+                        offsetList += [beatSaverDataPerDifficulty.get("offset")]
+                        notesList += [beatSaverDataPerDifficulty.get("notes")]
+                        bombsList += [beatSaverDataPerDifficulty.get("bombs")]
+                        obstaclesList += [beatSaverDataPerDifficulty.get("obstacles")]
+                        npsList += [beatSaverDataPerDifficulty.get("nps")]
+                        lengthList += [beatSaverDataPerDifficulty.get("length")]
+                        characteristicList += [beatSaverDataPerDifficulty.get("characteristic")]
+                        eventsList += [beatSaverDataPerDifficulty.get("events")]
+                        chromaList += [beatSaverDataPerDifficulty.get("chroma")]
+                        meList += [beatSaverDataPerDifficulty.get("me")]
+                        neList += [beatSaverDataPerDifficulty.get("ne")]
+                        cinemaList += [beatSaverDataPerDifficulty.get("cinema")]
+                        secondsList += [beatSaverDataPerDifficulty.get("seconds")]
+                        errorsList += [beatSaverDataPerDifficulty.get("paritySummary").get("errors")]
+                        warnsList += [beatSaverDataPerDifficulty.get("paritySummary").get("warns")]
+                        resetsList += [beatSaverDataPerDifficulty.get("paritySummary").get("resets")]
+                        if (
+                                scoreSaberDataPerDifficulty.get("songHash").upper() == "5536BE9C26867AB38524FA53E30FC1AB889D3251" or \
+                                scoreSaberDataPerDifficulty.get(
+                                    "songHash").upper() == "FFEEC65EFC5212B770D6DEED6F9AD766914D7635" or \
+                                scoreSaberDataPerDifficulty.get(
+                                    "songHash").upper() == "7B4445883E395FFEFC41BADCE1FA3159FADA9E3C"):
                             # 全難易度がランクなのでできること
-                            urlDifficulty=0
-                            if(k.get("difficulty")=="Easy"):
-                                urlDifficulty=1
-                            elif(k.get("difficulty")=="Normal"):
-                                urlDifficulty=3
-                            elif(k.get("difficulty")=="Hard"):
-                                urlDifficulty=5
-                            elif(k.get("difficulty")=="Expert"):
-                                urlDifficulty=7
-                            elif(k.get("difficulty")=="ExpertPlus"):
-                                urlDifficulty=9
-                            leaderboardUrl=f"https://scoresaber.com/api/leaderboard/by-hash/{j.get('songHash').upper()}/info?difficulty={urlDifficulty}"
-                            leaderboardResponse = requests.get(leaderboardUrl)
-                            leaderboardJson=leaderboardResponse.json()
-                            starsList += [leaderboardJson.get("stars")]
+                            urlDifficulty = 0
+                            if beatSaverDataPerDifficulty.get("difficulty") == "Easy":
+                                urlDifficulty = 1
+                            elif beatSaverDataPerDifficulty.get("difficulty") == "Normal":
+                                urlDifficulty = 3
+                            elif beatSaverDataPerDifficulty.get("difficulty") == "Hard":
+                                urlDifficulty = 5
+                            elif beatSaverDataPerDifficulty.get("difficulty") == "Expert":
+                                urlDifficulty = 7
+                            elif beatSaverDataPerDifficulty.get("difficulty") == "ExpertPlus":
+                                urlDifficulty = 9
+                            scoreSaberStarsUrl = f"https://scoresaber.com/api/leaderboard/by-hash/{scoreSaberDataPerDifficulty.get('songHash').upper()}/info?difficulty={urlDifficulty}"
+                            scoreSaberStarsResponse = requests.get(scoreSaberStarsUrl)
+                            scoreSaberStarsJson = scoreSaberStarsResponse.json()
+                            starsList += [scoreSaberStarsJson.get("stars")]
                         else:
-                            starsList += [k.get("stars")]
-                        maxScoreList += [k.get("maxScore")]
+                            starsList += [beatSaverDataPerDifficulty.get("stars")]
+                        maxScoreList += [beatSaverDataPerDifficulty.get("maxScore")]
                         downloadUrlList += [mapDetail.get("versions")[-1].get("downloadURL")]
                         coverUrlList += [mapDetail.get("versions")[-1].get("coverURL")]
                         previewUrlList += [mapDetail.get("versions")[-1].get("previewURL")]
@@ -203,7 +210,7 @@ if len(idList) == 0:
 
 else:
     # DBと同じ考え方でOK
-    df = pd.DataFrame(columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
+    addedDf = pd.DataFrame(columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
                                "uploaderName", "uploaderHash", "uploaderAvatar",
                                "uploaderLoginType",
                                "uploaderCurator", "bpm", "duration", "songAuthorName",
@@ -246,9 +253,9 @@ else:
                             "coverUrl": coverUrlList,
                             "previewUrl": previewUrlList, "tags": tagsList})
 
-    print(df.head())
+    print(addedDf.head())
 
-    nextDf = df.append(previousDf, ignore_index=True)
+    nextDf = addedDf.append(previousDf, ignore_index=True)
 
 # For local update, change "out" to "."
 # 余分な空行が入るのでnewline設定で回避
