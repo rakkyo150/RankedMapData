@@ -6,7 +6,8 @@
 This is a csv of the ranked maps data you can get from BeatSaver API.<br>
 This is a csv of the data about maps themselves, so it does not include the PP-related data you can get from ScoreSaber.<br>
 ~~I have it set to update every 3 hours now.~~<br>
-It will update only for the added ranked maps every hour, and update all the map data for the 9:00 am Japan time update.
+~~It will update only for the added ranked maps every hour, and update all the map data for the 9:00 am Japan time update.~~
+It gets all the map data at the 9:00 am Japan time
 
 ## Data Item Description
  think you can understand most of it, but I'll explain it here.<br>
