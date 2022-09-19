@@ -36,11 +36,20 @@ class DataGetter:
     uploaderAvatarList = []
     uploaderLoginTypeList = []
     uploaderCuratorList = []
+    uploaderVerifiedMapperList = []
     bpmList = []
     # 曲全体の長さ
     durationList = []
+    songNameList = []
+    songSubNameList = []
     songAuthorNameList = []
     levelAuthorNameList = []
+    # BeatSaverだと全部０なのでScoreSaberから取得する
+    playsList = []
+    # ScoreSaberから取得
+    dailyPlaysList=[]
+    # 全部０になるみたい
+    downloadsList = []
     upvotesList = []
     downvotesList = []
     upvotesRatioList = []
@@ -54,6 +63,8 @@ class DataGetter:
     lastPublishedAtList = []
     automapperList = []
     qualifiedList = []
+    # ScoreSaberから取得
+    lovedList=[]
     difficultyList = []
     sageScoreList = []
     njsList = []
@@ -74,6 +85,9 @@ class DataGetter:
     errorsList = []
     warnsList = []
     resetsList = []
+    # ScoreSaberから取得
+    positiveModifiersList=[]
+    # ScoreSaberから取得
     starsList = []
     maxScoreList = []
     downloadUrlList = []
@@ -90,6 +104,11 @@ class DataGetter:
             # ランク譜面の情報を最新のものから順に
             score_saber_response = requests.get(
                 f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={page_number}")
+
+            # For simple test
+            # score_saber_response = requests.get(
+            #     f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={0}")
+
             score_saber_json_data = score_saber_response.json()
 
             if len(score_saber_json_data.get("leaderboards")) == 0:
@@ -132,6 +151,9 @@ class DataGetter:
                     self.add_data(beatSaverDataPerDifficulty, map_detail,
                                   score_saber_data_per_difficulty, score_saber_ranked_stars_json)
 
+            # For simple test
+            # break
+
         # DBと同じ考え方でOK
         outcome_df = self.set_data()
         print(outcome_df.head())
@@ -155,12 +177,18 @@ class DataGetter:
             map_detail.get("uploader").get("type")]
         self.uploaderCuratorList += [
             map_detail.get("uploader").get("curator")]
+        self.uploaderVerifiedMapperList += [map_detail.get("uploader").get("verifiedMapper")]
         self.bpmList += [map_detail.get("metadata").get("bpm")]
         self.durationList += [map_detail.get("metadata").get("duration")]
+        self.songNameList += [map_detail.get("metadata").get("songName")]
+        self.songSubNameList += [map_detail.get("metadata").get("songSubName")]
         self.songAuthorNameList += [
             map_detail.get("metadata").get("songAuthorName")]
         self.levelAuthorNameList += [
             map_detail.get("metadata").get("levelAuthorName")]
+        self.playsList += [score_saber_data_per_difficulty.get("plays")]
+        self.dailyPlaysList += [score_saber_data_per_difficulty.get("dailyPlays")]
+        self.downloadsList += [map_detail.get("stats").get("downloads")]
         self.upvotesList += [map_detail.get("stats").get("upvotes")]
         self.downvotesList += [map_detail.get("stats").get("downvotes")]
         self.upvotesRatioList += [map_detail.get("stats").get("score")]
@@ -170,6 +198,7 @@ class DataGetter:
         self.lastPublishedAtList += [map_detail.get("lastPublishedAt")]
         self.automapperList += [map_detail.get("automapper")]
         self.qualifiedList += [map_detail.get("qualified")]
+        self.lovedList+=[score_saber_data_per_difficulty.get("loved")]
         if "sageScore" in map_detail.get("versions")[-1]:
             self.sageScoreList += [
                 map_detail.get("versions")[-1].get("sageScore")]
@@ -195,6 +224,7 @@ class DataGetter:
         self.warnsList += [beatSaverDataPerDifficulty.get("paritySummary").get("warns")]
         self.resetsList += [
             beatSaverDataPerDifficulty.get("paritySummary").get("resets")]
+        self.positiveModifiersList += [score_saber_data_per_difficulty.get("positiveModifiers")]
         self.starsList += [score_saber_stars_json.get("stars")]
         self.maxScoreList += [beatSaverDataPerDifficulty.get("maxScore")]
         self.downloadUrlList += [
@@ -217,16 +247,17 @@ class DataGetter:
             columns=["id", "leaderboardId", "hash", "name", "description", "uploaderId",
                      "uploaderName", "uploaderHash", "uploaderAvatar",
                      "uploaderLoginType",
-                     "uploaderCurator", "bpm", "duration", "songAuthorName",
-                     "levelAuthorName",
-                     "upvotes", "downvotes", "upvotesRatio", "uploadedAt", "createdAt",
+                     "uploaderCurator", "uploaderVerifiedMapper", "bpm", "duration",
+                     "songName", "songSubName", "songAuthorName", "levelAuthorName",
+                     "plays", "dailyPlays","downloads",
+                     "upvotes", "downvotes", "upvotesRatio", "uploadedAt","createdAt",
                      "updatedAt",
-                     "lastPublishedAt", "automapper", "qualified", "difficulty",
+                     "lastPublishedAt", "automapper", "qualified","loved", "difficulty",
                      "sageScore",
                      "njs", "offset", "notes", "bombs", "obstacles", "nps", "length",
                      "characteristic",
                      "events", "chroma", "me", "ne", "cinema", "seconds", "errors",
-                     "warns", "resets", "stars",
+                     "warns", "resets", "positiveModifiers","stars",
                      "maxScore", "downloadUrl", "coverUrl", "previewUrl", "tags"],
             data={"id": self.idList, "leaderboardId": self.leaderboardIdList,
                   "hash": self.hashList,
@@ -237,15 +268,23 @@ class DataGetter:
                   "uploaderAvatar": self.uploaderAvatarList,
                   "uploaderLoginType": self.uploaderLoginTypeList,
                   "uploaderCurator": self.uploaderCuratorList,
+                  "uploaderVerifiedMapper": self.uploaderVerifiedMapperList,
                   "bpm": self.bpmList, "duration": self.durationList,
+                  "songName": self.songNameList,
+                  "songSubName": self.songSubNameList,
                   "songAuthorName": self.songAuthorNameList,
-                  "levelAuthorName": self.levelAuthorNameList, "upvotes": self.upvotesList,
+                  "levelAuthorName": self.levelAuthorNameList,
+                  "plays": self.playsList,
+                  "dailyPlays":self.dailyPlaysList,
+                  "downloads": self.downloadsList,
+                  "upvotes": self.upvotesList,
                   "downvotes": self.downvotesList,
                   "upvotesRatio": self.upvotesRatioList, "uploadedAt": self.uploadedAtList,
                   "createdAt": self.createdAtList,
                   "updatedAt": self.updatedAtList, "lastPublishedAt": self.lastPublishedAtList,
                   "automapper": self.automapperList,
-                  "qualified": self.qualifiedList, "difficulty": self.difficultyList,
+                  "qualified": self.qualifiedList, "loved":self.lovedList,
+                  "difficulty": self.difficultyList,
                   "sageScore": self.sageScoreList, "njs": self.njsList,
                   "offset": self.offsetList,
                   "notes": self.notesList, "bombs": self.bombsList,
@@ -257,7 +296,8 @@ class DataGetter:
                   "cinema": self.cinemaList,
                   "seconds": self.secondsList,
                   "errors": self.errorsList, "warns": self.warnsList, "resets": self.resetsList,
+                  "positiveModifiers":self.positiveModifiersList,
                   "stars": self.starsList,
-                  "maxScore": self.maxScoreList, "downloadUrl": self.downvotesList,
+                  "maxScore": self.maxScoreList, "downloadUrl": self.downloadUrlList,
                   "coverUrl": self.coverUrlList,
                   "previewUrl": self.previewUrlList, "tags": self.tagsList})
