@@ -26,6 +26,7 @@ def get_ranked_stars_data(beat_saver_data_per_difficulty, score_saber_data_per_d
 
 class DataGetter:
     idList = []
+    # ScoreSaberから取得
     leaderboardIdList = []
     hashList = []
     nameList = []
