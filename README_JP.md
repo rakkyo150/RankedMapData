@@ -28,10 +28,16 @@ BeatSaverから取得できるランク譜面のデータのcsvです<br>
 |uploaderAvatar|譜面アップロード者のアイコン|
 |uploaderLoginType|譜面アップロード者のログインの種類|
 |uploaderCurator|譜面アップロード者がCuratorかどうか|
+|uploaderVerifiedMapper|譜面アップロード者が認証されているかどうか|
 |bpm|Beat Per Minute|
 |duration|譜面全体の長さ(単位は秒)|
+|songName|曲の名前|
+|songSubName|曲のサブタイトル|
 |songAuthorName|曲の作者|
 |levelAuthorName|譜面の作者|
+|plays|総プレイ数|
+|dailyPlays|一日にプレイされた回数|
+|downloads|ダウンロードされた回数(なぜかすべて０です)|
 |upvotes|アップボートの数|
 |downvotes|ダウンボートの数|
 |upvotesRatio|アップボートの割合|
@@ -41,6 +47,7 @@ BeatSaverから取得できるランク譜面のデータのcsvです<br>
 |lastPublishedAt|譜面をパブリッシュした日時のうちもっとも新しいもの|
 |automapper|自動マッピングかどうか|
 |qualified|qualifiedの譜面かどうか|
+|loved|lovedの譜面かどうか|
 |difficulty|譜面の難易度(EasyからExpertPlus)|
 |sageScore|どれだけBeatSageで作った譜面っぽいか|
 |njs|Notes Jump Speed(単位はm/s)|
@@ -60,6 +67,7 @@ BeatSaverから取得できるランク譜面のデータのcsvです<br>
 |errors|譜面に含まれるエラー数|
 |warns|譜面に含まれるwarns数|
 |resets|譜面に含まれるリセット数|
+|positiveModifier|Modifierがスコアに影響するかどうか|
 |stars|譜面の星の数|
 |maxScore|コンボ倍率のみをかけた最大のスコア|
 |downloadUrl|譜面のダウンロードURL|

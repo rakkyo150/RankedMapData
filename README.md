@@ -26,10 +26,16 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |uploaderAvatar|uploader icon|
 |uploaderLoginType|uploader login type|
 |uploaderCurator|the uploader is a curator or not|
+|uploaderVerifiedMapper|the uploader is verified or not|
 |bpm|Beat Per Minute|
 |duration|length of the whole map in seconds|
+|songName|song name|
+|songSubName|song sub name|
 |songAuthorName|song author name|
 |levelAuthorName|map author name|
+|plays|number of all plays|
+|dailyPlays|number of daily plays|
+|downloads|number of downloads(I do not know why, but all is 0)|
 |upvotes|number of upvotes|
 |downvotes|number of downvotes|
 |upvotesRatio|upvotes ratio|
@@ -39,6 +45,7 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |lastPublishedAt|the latest Date and time when the map itself was published|
 |automapper|automapper or not|
 |qualified|the map is qualified or not|
+|loved|the map is loved or not|
 |difficulty|difficulty of the score (Easy to ExpertPlus)|
 |sageScore|how much the map is like what is made with BeatSage|
 |njs|Notes Jump Speed (in m/s)|
@@ -58,6 +65,7 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |errors|Number of errors in the map|
 |warns|number of warns in the map|
 |resets|number of resets in the map|
+|positiveModifier|modifiers reflect on score or not|
 |stars|number of the map star|
 |maxScore|combo multiplied max score|
 |downloadRul|map download url|
