@@ -68,7 +68,7 @@ To be honest, I'm not sure about some of the items, so if there are any mistakes
 |positiveModifier|modifiers reflect on score or not|
 |stars|number of the map star|
 |maxScore|combo multiplied max score|
-|downloadRul|map download url|
+|downloadUrl|map download url|
 |coverUrl|map cover url|
 |previewUrl|map preview url|
 |tags|map tags|
