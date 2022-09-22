@@ -1,3 +1,4 @@
+![Build](https://github.com/rakkyo150/RankedMapData/actions/workflows/main.yml/badge.svg)
 ## The English version of README is [here](README.md)
 
 # RankedMapData
