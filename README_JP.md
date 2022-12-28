@@ -10,6 +10,21 @@ BeatSaverを中心として取得できるランク譜面のデータのcsvで�
 ~~１時間ごとに追加されたランク譜面の分だけ更新、日本時間の９時台の更新にはすべての譜面のデータを更新します。~~
 日本時間の９時ごろにすべての譜面のデータを取得します。
 
+## 関連リンク
+
+Training Data : https://github.com/rakkyo150/RankedMapData <br>
+Model : https://github.com/rakkyo150/PredictStarNumberHelper <br>
+Mod : https://github.com/rakkyo150/PredictStarNumberMod <br>
+Chrome Extension : https://github.com/rakkyo150/PredictStarNumberExtension <br>
+
+```mermaid
+flowchart
+    First(RankedMapData) -- Training Data --> Second(PredictStarNumberHelper)
+    Second -- Learned Model --> Third(PredictStarNumber)
+    Third <-- REST API --> PredictStarNumberExtension
+    Third <-- REST API --> PredictStarNumberMod
+```
+
 ## ダウンロード先
 [こちら](https://github.com/rakkyo150/ScoreSaberRankData/releases) からダウンロードできます
 
