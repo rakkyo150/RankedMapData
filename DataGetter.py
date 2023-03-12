@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from pandas import DataFrame
-
+import time
 
 def get_ranked_stars_data(beat_saver_data_per_difficulty, score_saber_data_per_difficulty):
     url_difficulty = 0
@@ -101,6 +101,7 @@ class DataGetter:
         get_data_from_beat_saver_count = 0
         page_number = 0
         while True:
+            # BeatSaverのapiでスリープするのでここではsleep不要
             page_number += 1
             # ランク譜面の情報を最新のものから順に
             score_saber_response = requests.get(
@@ -126,6 +127,7 @@ class DataGetter:
                 print(score_saber_data_per_difficulty.get("songName"))
                 previous_hash_list.append(score_saber_data_per_difficulty.get("songHash").upper())
                 # ハッシュが一致する譜面の全難易度の情報を取得していく
+                time.sleep(1)
                 beat_saver_response = requests.get(
                     f'https://api.beatsaver.com/maps/hash/{score_saber_data_per_difficulty.get("songHash")}')
 
