@@ -167,49 +167,42 @@ class DataGetter:
         self.idList += [map_detail.get("id")]
         self.leaderboardIdList += [
             score_saber_data_per_difficulty.get("id")]
-        self.hashList += [score_saber_data_per_difficulty.get("songHash")]
-        self.nameList += [map_detail.get("name")]
-        self.descriptionList += [map_detail.get("description")]
-        self.uploaderIdList += [map_detail.get("uploader").get("id")]
-        self.uploaderNameList += [map_detail.get("uploader").get("name")]
-        self.uploaderHashList += [map_detail.get("uploader").get("hash")]
+        self.hashList += [score_saber_data_per_difficulty.get("songHash", "")]
+        self.nameList += [map_detail.get("name", "")]
+        self.descriptionList += [map_detail.get("description", "")]
+        self.uploaderIdList += [map_detail.get("uploader", {}).get("id")]
+        self.uploaderNameList += [map_detail.get("uploader", {}).get("name", "")]
+        self.uploaderHashList += [map_detail.get("uploader", {}).get("hash", "")]
         self.uploaderAvatarList += [
-            map_detail.get("uploader").get("avatar")]
+            map_detail.get("uploader", {}).get("avatar", "")]
         self.uploaderLoginTypeList += [
-            map_detail.get("uploader").get("type")]
+            map_detail.get("uploader", {}).get("type", "")]
         self.uploaderCuratorList += [
-            map_detail.get("uploader").get("curator")]
-        if map_detail.get("uploader").get("verifiedMapper") is None:
-            self.uploaderVerifiedMapperList += [False]
-        else:
-            self.uploaderVerifiedMapperList += [map_detail.get("uploader").get("verifiedMapper")]
+            map_detail.get("uploader", {}).get("curator")]
+        self.uploaderVerifiedMapperList += [map_detail.get("uploader", {}).get("verifiedMapper")]
         self.bpmList += [map_detail.get("metadata").get("bpm")]
         self.durationList += [map_detail.get("metadata").get("duration")]
-        self.songNameList += [map_detail.get("metadata").get("songName")]
-        self.songSubNameList += [map_detail.get("metadata").get("songSubName")]
+        self.songNameList += [map_detail.get("metadata").get("songName", "")]
+        self.songSubNameList += [map_detail.get("metadata").get("songSubName", "")]
         self.songAuthorNameList += [
-            map_detail.get("metadata").get("songAuthorName")]
+            map_detail.get("metadata", {}).get("songAuthorName", "")]
         self.levelAuthorNameList += [
-            map_detail.get("metadata").get("levelAuthorName")]
+            map_detail.get("metadata", {}).get("levelAuthorName", "")]
         self.playsList += [score_saber_data_per_difficulty.get("plays")]
         self.dailyPlaysList += [score_saber_data_per_difficulty.get("dailyPlays")]
-        self.downloadsList += [map_detail.get("stats").get("downloads")]
-        self.upvotesList += [map_detail.get("stats").get("upvotes")]
-        self.downvotesList += [map_detail.get("stats").get("downvotes")]
-        self.upvotesRatioList += [map_detail.get("stats").get("score")]
-        self.uploadedAtList += [map_detail.get("uploaded")]
-        self.createdAtList += [map_detail.get("createdAt")]
-        self.updatedAtList += [map_detail.get("updatedAt")]
-        self.lastPublishedAtList += [map_detail.get("lastPublishedAt")]
+        self.downloadsList += [map_detail.get("stats", {}).get("downloads")]
+        self.upvotesList += [map_detail.get("stats", {}).get("upvotes")]
+        self.downvotesList += [map_detail.get("stats", {}).get("downvotes")]
+        self.upvotesRatioList += [map_detail.get("stats", {}).get("score")]
+        self.uploadedAtList += [map_detail.get("uploaded", "")]
+        self.createdAtList += [map_detail.get("createdAt", "")]
+        self.updatedAtList += [map_detail.get("updatedAt", "")]
+        self.lastPublishedAtList += [map_detail.get("lastPublishedAt", "")]
         self.automapperList += [map_detail.get("automapper")]
         self.qualifiedList += [map_detail.get("qualified")]
         self.lovedList += [score_saber_data_per_difficulty.get("loved")]
-        if "sageScore" in map_detail.get("versions")[-1]:
-            self.sageScoreList += [
-                map_detail.get("versions")[-1].get("sageScore")]
-        else:
-            self.sageScoreList += [None]
-        self.difficultyList += [beatSaverDataPerDifficulty.get("difficulty")]
+        self.sageScoreList += [map_detail.get("versions", [])[-1].get("sageScore")]
+        self.difficultyList += [beatSaverDataPerDifficulty.get("difficulty", "")]
         self.njsList += [beatSaverDataPerDifficulty.get("njs")]
         self.offsetList += [beatSaverDataPerDifficulty.get("offset")]
         self.notesList += [beatSaverDataPerDifficulty.get("notes")]
@@ -217,7 +210,7 @@ class DataGetter:
         self.obstaclesList += [beatSaverDataPerDifficulty.get("obstacles")]
         self.npsList += [beatSaverDataPerDifficulty.get("nps")]
         self.lengthList += [beatSaverDataPerDifficulty.get("length")]
-        self.characteristicList += [beatSaverDataPerDifficulty.get("characteristic")]
+        self.characteristicList += [beatSaverDataPerDifficulty.get("characteristic", "")]
         self.eventsList += [beatSaverDataPerDifficulty.get("events")]
         self.chromaList += [beatSaverDataPerDifficulty.get("chroma")]
         self.meList += [beatSaverDataPerDifficulty.get("me")]
@@ -225,26 +218,26 @@ class DataGetter:
         self.cinemaList += [beatSaverDataPerDifficulty.get("cinema")]
         self.secondsList += [beatSaverDataPerDifficulty.get("seconds")]
         self.errorsList += [
-            beatSaverDataPerDifficulty.get("paritySummary").get("errors")]
-        self.warnsList += [beatSaverDataPerDifficulty.get("paritySummary").get("warns")]
+            beatSaverDataPerDifficulty.get("paritySummary", {}).get("errors")]
+        self.warnsList += [beatSaverDataPerDifficulty.get("paritySummary", {}).get("warns")]
         self.resetsList += [
-            beatSaverDataPerDifficulty.get("paritySummary").get("resets")]
+            beatSaverDataPerDifficulty.get("paritySummary", {}).get("resets")]
         self.positiveModifiersList += [score_saber_data_per_difficulty.get("positiveModifiers")]
         self.starsList += [score_saber_stars_json.get("stars")]
         self.maxScoreList += [beatSaverDataPerDifficulty.get("maxScore")]
         self.downloadUrlList += [
-            map_detail.get("versions")[-1].get("downloadURL")]
+            map_detail.get("versions")[-1].get("downloadURL", "")]
         self.coverUrlList += [
-            map_detail.get("versions")[-1].get("coverURL")]
+            map_detail.get("versions")[-1].get("coverURL", "")]
         self.previewUrlList += [
-            map_detail.get("versions")[-1].get("previewURL")]
+            map_detail.get("versions")[-1].get("previewURL", "")]
         tag_str = ""
         if "tags" in map_detail:
             for tag in map_detail.get("tags"):
                 tag_str += tag + ","
             tag_str = tag_str[:-1]
         else:
-            tag_str = None
+            tag_str = ""
         self.tagsList += [tag_str]
 
     def set_data(self):
