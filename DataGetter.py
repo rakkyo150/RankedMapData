@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 from pandas import DataFrame
 import time
+import csv
 
 def get_ranked_stars_data(beat_saver_data_per_difficulty, score_saber_data_per_difficulty):
     url_difficulty = 0
@@ -96,7 +97,7 @@ class DataGetter:
     previewUrlList = []
     tagsList = []
 
-    def get_data(self) -> DataFrame:
+    def get_data(self, test: bool) -> DataFrame:
         previous_hash_list = []
         get_data_from_beat_saver_count = 0
         page_number = 0
@@ -105,7 +106,7 @@ class DataGetter:
             page_number += 1
             # ランク譜面の情報を最新のものから順に
             get_data_from_beat_saver_count, shouldBreak = self.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number)
-            if shouldBreak is False:
+            if shouldBreak is False or test is True:
                 break
 
         # DBと同じ考え方でOK
@@ -300,3 +301,8 @@ class DataGetter:
                   "maxScore": self.maxScoreList, "downloadUrl": self.downloadUrlList,
                   "coverUrl": self.coverUrlList,
                   "previewUrl": self.previewUrlList, "tags": self.tagsList})
+
+    def save(self, outcome_df: DataFrame, path: str):
+        # 余分な空行が入るのでnewline設定で回避
+        with open(path, 'w', encoding="utf-8", newline="\n", errors="ignore") as f:
+            outcome_df.to_csv(f, quoting=csv.QUOTE_NONNUMERIC)
