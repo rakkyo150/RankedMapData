@@ -104,7 +104,8 @@ class DataGetter:
             # BeatSaverのapiでスリープするのでここではsleep不要
             page_number += 1
             # ランク譜面の情報を最新のものから順に
-            if self.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number) is False:
+            get_data_from_beat_saver_count, shouldBreak = self.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number)
+            if shouldBreak is False:
                 break
 
         # DBと同じ考え方でOK
@@ -113,14 +114,14 @@ class DataGetter:
 
         return outcome_df
     
-    def get_data_per_page(self, previous_hash_list: list, get_data_from_beat_saver_count: int, page_number: int) -> bool:
+    def get_data_per_page(self, previous_hash_list: list, get_data_from_beat_saver_count: int, page_number: int) -> (int, bool):
         score_saber_response = requests.get(
                 f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={page_number}")
 
         score_saber_json_data = score_saber_response.json()
 
         if len(score_saber_json_data.get("leaderboards")) == 0:
-            return False
+            return get_data_from_beat_saver_count, False
 
         for score_saber_data_per_difficulty in score_saber_json_data.get("leaderboards"):
             # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
@@ -160,7 +161,7 @@ class DataGetter:
                 self.add_data(beatSaverDataPerDifficulty, map_detail,
                                 score_saber_data_per_difficulty, score_saber_ranked_stars_json)
                 
-        return True
+        return get_data_from_beat_saver_count, True
 
     def add_data(self, beatSaverDataPerDifficulty, map_detail, score_saber_data_per_difficulty,
                  score_saber_stars_json):
