@@ -2,7 +2,7 @@ import unittest
 import DataGetter
 
 class TestGetDataPerPage(unittest.TestCase):
-    dataGetter = None
+    dataGetter = DataGetter.DataGetter()
     
     """Tests for the get_data_per_page function.""" 
     def test_get_data_per_page_success(self):
@@ -11,8 +11,7 @@ class TestGetDataPerPage(unittest.TestCase):
         get_data_from_beat_saver_count = 0
         page_number = 1
         result = False
-        if self.dataGetter is None:
-            self.dataGetter = DataGetter.DataGetter()
+        if len(self.dataGetter.set_data().index) == 0:
             result = self.dataGetter.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number)
 
         # Make assertions about the results
@@ -39,8 +38,7 @@ class TestGetDataPerPage(unittest.TestCase):
         previous_hash_list = []
         get_data_from_beat_saver_count = 0
         page_number = 1
-        if self.dataGetter is None:
-            self.dataGetter = DataGetter.DataGetter()
+        if len(self.dataGetter.set_data().index) == 0:
             _ = self.dataGetter.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number)
 
         # Call the function to be tested
