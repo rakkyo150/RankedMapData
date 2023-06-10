@@ -104,64 +104,63 @@ class DataGetter:
             # BeatSaverのapiでスリープするのでここではsleep不要
             page_number += 1
             # ランク譜面の情報を最新のものから順に
-            score_saber_response = requests.get(
-                f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={page_number}")
-
-            # For simple test
-            # score_saber_response = requests.get(
-            #     f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={0}")
-
-            score_saber_json_data = score_saber_response.json()
-
-            if len(score_saber_json_data.get("leaderboards")) == 0:
+            if self.get_data_per_page(previous_hash_list, get_data_from_beat_saver_count, page_number) is False:
                 break
-
-            for score_saber_data_per_difficulty in score_saber_json_data.get("leaderboards"):
-                # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
-                # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
-                if score_saber_data_per_difficulty.get("songHash").upper() in previous_hash_list:
-                    continue
-
-                get_data_from_beat_saver_count += 1
-                print(f"{get_data_from_beat_saver_count}回目の取得")
-                print(score_saber_data_per_difficulty.get("songName"))
-                previous_hash_list.append(score_saber_data_per_difficulty.get("songHash").upper())
-                # ハッシュが一致する譜面の全難易度の情報を取得していく
-                time.sleep(1)
-                beat_saver_response = requests.get(
-                    f'https://api.beatsaver.com/maps/hash/{score_saber_data_per_difficulty.get("songHash")}')
-
-                # ScoreSaberに情報はあるけどBeatSaverでは消されたっぽい譜面
-                if beat_saver_response.status_code == 404:
-                    print(f"{beat_saver_response.status_code} Not Found: "
-                          f"{score_saber_data_per_difficulty.get('songName')}-"
-                          f"{score_saber_data_per_difficulty.get('id')}-"
-                          f"{score_saber_data_per_difficulty.get('songHash')}")
-                    continue
-
-                map_detail = beat_saver_response.json()
-                map_difficulty = map_detail.get("versions")[-1].get("diffs")
-
-                for beatSaverDataPerDifficulty in map_difficulty:
-
-                    score_saber_ranked_stars_json = get_ranked_stars_data(
-                        beatSaverDataPerDifficulty, score_saber_data_per_difficulty)
-
-                    # 重いけどBeatSaverのランクかどうかの情報は信頼性に欠ける
-                    if not score_saber_ranked_stars_json.get("ranked"):
-                        continue
-
-                    self.add_data(beatSaverDataPerDifficulty, map_detail,
-                                  score_saber_data_per_difficulty, score_saber_ranked_stars_json)
-
-            # For simple test
-            # break
 
         # DBと同じ考え方でOK
         outcome_df = self.set_data()
         print(outcome_df.head())
 
         return outcome_df
+    
+    def get_data_per_page(self, previous_hash_list: list, get_data_from_beat_saver_count: int, page_number: int) -> bool:
+        score_saber_response = requests.get(
+                f"https://scoresaber.com/api/leaderboards?ranked=true&category=1&sort=0&page={page_number}")
+
+        score_saber_json_data = score_saber_response.json()
+
+        if len(score_saber_json_data.get("leaderboards")) == 0:
+            return False
+
+        for score_saber_data_per_difficulty in score_saber_json_data.get("leaderboards"):
+            # 小文字だけのハッシュや大文字小文字両方のハッシュが存在する譜面の対応のため、比較するときは大文字にそろえる
+            # 一度ハッシュを取得すれば他難易度の同ハッシュは重複するのでいらない
+            if score_saber_data_per_difficulty.get("songHash").upper() in previous_hash_list:
+                continue
+
+            get_data_from_beat_saver_count += 1
+            print(f"{get_data_from_beat_saver_count}回目の取得")
+            print(score_saber_data_per_difficulty.get("songName"))
+            previous_hash_list.append(score_saber_data_per_difficulty.get("songHash").upper())
+            # ハッシュが一致する譜面の全難易度の情報を取得していく
+            time.sleep(1)
+            beat_saver_response = requests.get(
+                f'https://api.beatsaver.com/maps/hash/{score_saber_data_per_difficulty.get("songHash")}')
+
+            # ScoreSaberに情報はあるけどBeatSaverでは消されたっぽい譜面
+            if beat_saver_response.status_code == 404:
+                print(f"{beat_saver_response.status_code} Not Found: "
+                        f"{score_saber_data_per_difficulty.get('songName')}-"
+                        f"{score_saber_data_per_difficulty.get('id')}-"
+                        f"{score_saber_data_per_difficulty.get('songHash')}")
+                continue
+
+            map_detail = beat_saver_response.json()
+            map_difficulty = map_detail.get("versions")[-1].get("diffs")
+
+            for beatSaverDataPerDifficulty in map_difficulty:
+
+                score_saber_ranked_stars_json = get_ranked_stars_data(
+                    beatSaverDataPerDifficulty, score_saber_data_per_difficulty)
+
+                # 重いけどBeatSaverのランクかどうかの情報は信頼性に欠ける
+                if not score_saber_ranked_stars_json.get("ranked"):
+                    continue
+
+                self.add_data(beatSaverDataPerDifficulty, map_detail,
+                                score_saber_data_per_difficulty, score_saber_ranked_stars_json)
+                
+        return True
 
     def add_data(self, beatSaverDataPerDifficulty, map_detail, score_saber_data_per_difficulty,
                  score_saber_stars_json):
