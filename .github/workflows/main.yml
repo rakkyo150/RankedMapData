@@ -25,15 +25,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generate version file
-        run: |
-          echo `date +%Y%m%d%H%M%S` > version.txt
-
-      - name: Auto Commit
-        uses: stefanzweifel/git-auto-commit-action@v3.0.0
-        with:
-          commit_message: Auto Commit
-
       - name: Generate Csv
         run: |
           mkdir out
@@ -51,6 +42,15 @@ jobs:
           hub release create "${assets[@]}" -m "Latest" "$tag_name"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate version file
+        run: |
+          echo `date +%Y%m%d%H%M%S` > version.txt
+
+      - name: Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v3.0.0
+        with:
+          commit_message: Auto Commit
 
       - name: Cleanup
         uses: dev-drprasad/delete-older-releases@v0.2.0
