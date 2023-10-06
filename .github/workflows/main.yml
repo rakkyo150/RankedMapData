@@ -39,9 +39,9 @@ jobs:
           set -x
           cd out
           assets=()
-          assets+=("-a" "./outcome.csv")
+          assets+=("./outcome.csv")
           tag_name=`date '+%Y%m%d%H%M'`
-          hub release create "${assets[@]}" -m "Latest" "$tag_name"
+          gh release create "$tag_name" "${assets[@]}" -t "Latest"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
