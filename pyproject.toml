@@ -1,0 +1,27 @@
+[project]
+name = "rankedmapdata"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "rakkyo150", email = "86054813+rakkyo150@users.noreply.github.com" }
+]
+dependencies = [
+    "requests>=2.32.3",
+    "pandas>=2.2.2",
+]
+readme = "README.md"
+requires-python = ">= 3.12"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rankedmapdata"]
