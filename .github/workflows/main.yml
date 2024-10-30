@@ -5,7 +5,6 @@ on:
   schedule:
     - cron: "0 0 */1 * *"
   workflow_dispatch:
-    branches: [ master ]
 
 jobs:
   build:
@@ -15,18 +14,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install a specific version
-        uses: eifinger/setup-rye@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.28"
+      
+      - name: Set up Python
+        run: uv python install
 
-      - name: Install Dependencies
-        run: rye sync
+      - name: Install the project
+        run: uv sync --all-extras --dev
 
       - name: Generate Csv
         run: |
           if [ ! -d out ]; then
             mkdir out
           fi
-          rye run python main.py
+          uv run main.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
