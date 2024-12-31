@@ -8,3 +8,5 @@ wheels/
 
 # venv
 .venv
+
+uv-x86_64-unknown-linux-gnu.tar.gz
