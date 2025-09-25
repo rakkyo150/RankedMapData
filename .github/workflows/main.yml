@@ -6,7 +6,7 @@ permissions:
 # Controls when the workflow will run
 on:
   schedule:
-    - cron: "0 12 */1 * *"
+    - cron: "0 15 */1 * *"
   workflow_dispatch:
 
 jobs:
